@@ -19,8 +19,8 @@ class CategoryItem extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              height: 50,
-              width: 50,
+              height: 24,
+              width: 24,
               color: groceryItem.category.color,
               margin: const EdgeInsets.all(5),
             ),

@@ -1,6 +1,6 @@
 import 'package:shopping_list/models/grocery.dart';
 import 'package:shopping_list/data/categories.dart';
-
+import 'package:shopping_list/models/category.dart';
  var groceryItems = [
   GroceryItem(
       id: 'a',
