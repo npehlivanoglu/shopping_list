@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shopping_list/data/categories.dart';
+import 'package:shopping_list/models/category.dart';
+import 'package:shopping_list/models/grocery.dart';
 
 class NewItem extends StatefulWidget {
   const NewItem({super.key});
@@ -11,10 +13,20 @@ class NewItem extends StatefulWidget {
 
 class _NewItemState extends State<NewItem> {
   final _formKey = GlobalKey<FormState>();
-
-  void _saveItem(){
-    _formKey.currentState!.validate();
+  var _defaultCategory = categories[Categories.vegetables]!;
+  var _enteredName = ' ';
+  var _enteredQuantity = 1;
+  void _saveItem() {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      Navigator.of(context).pop(GroceryItem(
+          id: DateTime.now().toString(),
+          name: _enteredName,
+          quantity: _enteredQuantity,
+          category: _defaultCategory));
+    }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,6 +53,9 @@ class _NewItemState extends State<NewItem> {
                   }
                   return null;
                 },
+                onSaved: (newValue) {
+                  _enteredName = newValue!;
+                },
               ), //instead of textfield();
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -61,6 +76,9 @@ class _NewItemState extends State<NewItem> {
                       ),
                       keyboardType: TextInputType.number,
                       initialValue: '1',
+                      onSaved: (newValue) {
+                        _enteredQuantity = int.parse(newValue!);
+                      },
                     ),
                   ),
                   const SizedBox(
@@ -68,10 +86,11 @@ class _NewItemState extends State<NewItem> {
                   ),
                   Expanded(
                     child: DropdownButtonFormField(
+                      value: _defaultCategory,
                       items: [
                         for (final category in categories.entries)
                           DropdownMenuItem(
-                              value: category.key,
+                              value: category.value,
                               child: Row(
                                 children: [
                                   Container(
@@ -86,7 +105,11 @@ class _NewItemState extends State<NewItem> {
                                 ],
                               ))
                       ],
-                      onChanged: ((value) {}),
+                      onChanged: ((value) {
+                        setState(() {
+                          _defaultCategory = value!;
+                        });
+                      }),
                     ),
                   )
                 ],
@@ -98,7 +121,9 @@ class _NewItemState extends State<NewItem> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _formKey.currentState!.reset();
+                    },
                     child: const Text('Reset'),
                   ),
                   ElevatedButton(
