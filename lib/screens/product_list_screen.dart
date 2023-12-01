@@ -20,6 +20,7 @@ class ProductListScreen extends ConsumerStatefulWidget {
 class _ProductListScreenState extends ConsumerState<ProductListScreen> {
   List<GroceryItem> _newList = [];
   var _isLoading = true;
+  String? _error;
   @override
   void initState() {
     super.initState();
@@ -33,8 +34,15 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
     final response = await http.get(url);
 
     final Map<String, dynamic> listData = json.decode(response.body);
-
     final List<GroceryItem> loadedList = [];
+    setState(() {
+      _newList = loadedList;
+      _isLoading = false;
+      if (response.statusCode > 400) {
+        _error = "something went wrong";
+      }
+    });
+
     for (final item in listData.entries) {
       final category = categories.entries.firstWhere(
           (element) => element.value.name == item.value['category']);
@@ -44,11 +52,6 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
           quantity: item.value['quantity'],
           category: category.value));
     }
-
-    setState(() {
-      _newList = loadedList;
-      _isLoading = false;
-    });
   }
 
   void _addItem() async {
@@ -84,7 +87,12 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
         "To start add an item...",
       ));
     }
-    if (_isLoading) {
+    if (_error != null) {
+      content = Center(
+        child: Text(_error!),
+      );
+      print(_error);
+    } else if (_isLoading) {
       content = const Center(child: CircularProgressIndicator());
     }
     return Scaffold(
