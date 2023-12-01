@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shopping_list/data/categories.dart';
 import 'package:shopping_list/models/category.dart';
-import 'package:shopping_list/models/grocery.dart';
 import 'package:http/http.dart' as http;
 
 class NewItem extends StatefulWidget {
@@ -20,13 +19,13 @@ class _NewItemState extends State<NewItem> {
   var _enteredName = ' ';
   var _enteredQuantity = 1;
 
-  void _saveItem() {
+  void _saveItem() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       final url = Uri.https(
           'flutter-hello-c1db1-default-rtdb.europe-west1.firebasedatabase.app',
           'shopping-list.json');
-      http.post(
+      await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: json.encode(
@@ -35,15 +34,12 @@ class _NewItemState extends State<NewItem> {
             'quantity': _enteredQuantity,
             'category': _defaultCategory.name,
           },
-        ),
+        ), 
       );
-      Navigator.of(context).pop(
-        GroceryItem(
-            id: DateTime.now().toString(),
-            name: _enteredName,
-            quantity: _enteredQuantity,
-            category: _defaultCategory),
-      );
+      if (!context.mounted) {
+        return;
+      }
+      Navigator.of(context).pop();
     }
   }
 
