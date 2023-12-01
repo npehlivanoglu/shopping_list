@@ -19,7 +19,7 @@ class ProductListScreen extends ConsumerStatefulWidget {
 
 class _ProductListScreenState extends ConsumerState<ProductListScreen> {
   List<GroceryItem> _newList = [];
-
+  var _isLoading = true;
   @override
   void initState() {
     super.initState();
@@ -47,6 +47,7 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
 
     setState(() {
       _newList = loadedList;
+      _isLoading = false;
     });
   }
 
@@ -82,6 +83,9 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
           child: Text(
         "To start add an item...",
       ));
+    }
+    if (_isLoading) {
+      content = const Center(child: CircularProgressIndicator());
     }
     return Scaffold(
       appBar: AppBar(
