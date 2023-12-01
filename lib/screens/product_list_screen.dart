@@ -64,6 +64,25 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
     _loadItems();
   }
 
+  void _removeItem(GroceryItem item) async {
+    final index = _newList.indexOf(item);
+    setState(
+      () {
+        _newList.remove(item);
+      },
+    );
+    final url = Uri.https(
+        'flutter-hello-c1db1-default-rtdb.europe-west1.firebasedatabase.app',
+        'shopping-list/${item.id}.json');
+
+    final response = await http.delete(url);
+    if (response.statusCode >= 400) {
+      setState(() {
+        _newList.insert(index, item);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     //var groceryItems = ref.watch(groceryItemsProvider);
@@ -91,7 +110,6 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
       content = Center(
         child: Text(_error!),
       );
-      print(_error);
     } else if (_isLoading) {
       content = const Center(child: CircularProgressIndicator());
     }
