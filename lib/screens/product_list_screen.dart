@@ -87,19 +87,25 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
   Widget build(BuildContext context) {
     //var groceryItems = ref.watch(groceryItemsProvider);
     Widget content = ListView.builder(
-        itemCount: _newList.length,
-        itemBuilder: (context, index) => ListTile(
-              leading: Container(
-                width: 24,
-                height: 24,
-                color: _newList[index].category.color,
-              ),
-              title: Text(_newList[index].name),
-              trailing: Text(
-                _newList[index].quantity.toString(),
-              ),
-              key: ValueKey(_newList[index].id),
-            ));
+      itemCount: _newList.length,
+      itemBuilder: (context, index) => Dismissible(
+        onDismissed: (direction) {
+          _removeItem(_newList[index]);
+        },
+        key: ValueKey(_newList[index].id),
+        child: ListTile(
+          leading: Container(
+            width: 24,
+            height: 24,
+            color: _newList[index].category.color,
+          ),
+          title: Text(_newList[index].name),
+          trailing: Text(
+            _newList[index].quantity.toString(),
+          ),
+        ),
+      ),
+    );
     if (_newList.isEmpty) {
       content = const Center(
           child: Text(
