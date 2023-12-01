@@ -32,7 +32,12 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
         'flutter-hello-c1db1-default-rtdb.europe-west1.firebasedatabase.app',
         'shopping-list.json');
     final response = await http.get(url);
-
+    if (response.body == 'null') {
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
     final Map<String, dynamic> listData = json.decode(response.body);
     final List<GroceryItem> loadedList = [];
     setState(() {
