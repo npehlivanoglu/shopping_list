@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shopping_list/data/categories.dart';
 import 'package:shopping_list/models/grocery.dart';
 //import 'package:shopping_list/providers/grocery_items_provider.dart';
-import 'package:shopping_list/widgets/grocery_item.dart';
 import 'package:shopping_list/widgets/new_item.dart';
 import 'package:http/http.dart' as http;
 
@@ -35,11 +34,11 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
 
     final Map<String, dynamic> listData = json.decode(response.body);
 
-    final List<GroceryItem> _loadedList = [];
+    final List<GroceryItem> loadedList = [];
     for (final item in listData.entries) {
       final category = categories.entries.firstWhere(
           (element) => element.value.name == item.value['category']);
-      _loadedList.add(GroceryItem(
+      loadedList.add(GroceryItem(
           id: item.key,
           name: item.value['name'],
           quantity: item.value['quantity'],
@@ -47,7 +46,7 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
     }
 
     setState(() {
-      _newList = _loadedList;
+      _newList = loadedList;
     });
   }
 
@@ -65,9 +64,19 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
   Widget build(BuildContext context) {
     //var groceryItems = ref.watch(groceryItemsProvider);
     Widget content = ListView.builder(
-      itemCount: _newList.length,
-      itemBuilder: (context, index) => CategoryItem(_newList[index]),
-    );
+        itemCount: _newList.length,
+        itemBuilder: (context, index) => ListTile(
+              leading: Container(
+                width: 24,
+                height: 24,
+                color: _newList[index].category.color,
+              ),
+              title: Text(_newList[index].name),
+              trailing: Text(
+                _newList[index].quantity.toString(),
+              ),
+              key: ValueKey(_newList[index].id),
+            ));
     if (_newList.isEmpty) {
       content = const Center(
           child: Text(
